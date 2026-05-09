@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Звездная Продленка ⭐</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fe;
+            color: #2d3436;
+            text-align: center;
+            margin: 0;
+            padding: 15px;
+        }
+        h1 {
+            color: #6c5ce7;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 0px #dfe6e9;
+            margin-bottom: 20px;
+        }
+        
+        .controls {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: inline-block;
+            margin-bottom: 25px;
+        }
+        input {
+            padding: 10px 15px;
+            border: 3px solid #a29bfe;
+            border-radius: 12px;
+            font-size: 18px;
+            margin: 5px;
+            outline: none;
+            width: 200px;
+        }
+        input:focus { border-color: #6c5ce7; }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 5px;
+        }
+        button:hover { background-color: #5f27cd; transform: translateY(-2px); }
+        
+        .btn-select { background-color: #00cec9; }
+        .btn-select:hover { background-color: #01a3a0; }
+
+        .reset-btn {
+            background-color: #00b894; /* Сделали зеленую жизнеутверждающую кнопку */
+            margin-top: 50px;
+            padding: 15px 30px;
+            font-size: 20px;
+            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+        }
+        .reset-btn:hover { background-color: #009477; }
+
+        table {
+            margin: 0 auto;
+            border-collapse: separate;
+            border-spacing: 6px;
+        }
+        
+        th {
+            background-color: #00cec9;
+            color: #014a48;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 800;
+            min-width: 150px;
+            max-width: 250px;
+            position: relative;
+        }
+        
+        .student-name {
+            color: #2d3436;
+            font-weight: bold;
+            font-size: 22px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            min-width: 180px;
+            position: relative;
+        }
+
+        /* Контейнер для текста и крестика */
+        .cell-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Крестики для удаления */
+        .remove-icon {
+            font-size: 16px;
+            color: rgba(0,0,0,0.3);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+        .remove-icon:hover {
+            color: #d63031;
+            background-color: rgba(255,255,255,0.5);
+        }
+        
+        td.star-cell {
+            padding: 0;
+            text-align: center;
+            border-radius: 12px;
+            background-color: white;
+            width: 70px;
+            height: 55px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 3px dashed #dfe6e9;
+            font-size: 40px;
+            user-select: none;
+        }
+        td.star-cell:hover {
+            background-color: #f1f2f6;
+            transform: scale(1.05);
+            border-color: #a29bfe;
+        }
+        
+        .done {
+            background-color: #fff200 !important;
+            border: 3px solid #feca57 !important;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5) rotate(-20deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        /* Модальные окна */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 1000;
+        }
+        .modal {
+            background: white; padding: 30px; border-radius: 20px;
+            width: 450px; max-width: 90%; margin: 50px auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: left; max-height: 80vh; overflow-y: auto;
+        }
+        .modal h2 { margin-top: 0; color: #6c5ce7; }
+        .checkbox-label {
+            font-size: 20px; display: block; margin: 10px 0; cursor: pointer;
+            padding: 5px; border-radius: 8px; transition: background 0.2s;
+        }
+        .checkbox-label:hover { background: #f1f2f6; }
+        .checkbox-label input { width: 20px; height: 20px; margin-right: 15px; cursor: pointer;}
+        .modal-btns { text-align: right; margin-top: 25px; position: sticky; bottom: -10px; background: white; padding-top: 15px; border-top: 2px solid #f1f2f6;}
+        .close-btn { background: #b2bec3; }
+        .close-btn:hover { background: #636e72; }
+    </style>
+</head>
+<body>
+
+    <h1>🚀 Звездная Продленка</h1>
+
+    <div class="controls">
+        <input type="text" id="studentInput" placeholder="Новый ученик">
+        <button onclick="addNewStudent()">+ Ученик</button>
+        <button class="btn-select" onclick="openModal('students')">👥 Список</button>
+        
+        <span style="margin: 0 10px; color: #b2bec3; font-size: 24px;">|</span>
+        
+        <input type="text" id="subjectInput" placeholder="Новый предмет">
+        <button onclick="addSubject()">+ Предмет</button>
+        <button class="btn-select" onclick="openModal('subjects')">📚 Список</button>
+    </div>
+
+    <div id="generalModal" class="modal-overlay">
+        <div class="modal">
+            <h2 id="modalTitle">Выберите нужные пункты</h2>
+            <div id="checkboxList"></div>
+            <div class="modal-btns">
+                <button class="close-btn" onclick="closeModal()">Отмена</button>
+                <button onclick="applySelection()">Готово</button>
+            </div>
+        </div>
+    </div>
+
+    <table id="trackerTable">
+        <thead>
+            <tr id="headerRow">
+                <th>Ученики \ Предметы</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+    </table>
+
+    <button class="reset-btn" onclick="resetDay()">🔄 Начать новый день (Вернуть весь класс и очистить звездочки)</button>
+
+    <script>
+        const defaultClassList = [
+            "Белоцерковцев Лев", "Ельцов Елисей", "Ковалёва Кира", "Котлов Пётр",
+            "Матушкин Георгий", "Новикова Ульяна", "Романова Елизавета", "Рустамова Анастасия",
+            "Сапфиров Егор", "Стрельченко Андрей", "Тавлиди Вероника", "Усов Тимофей"
+        ];
+        
+        const defaultSubjectList = ["Математика", "Русский язык", "Чтение", "Окр. мир", "Английский"];
+
+        // Базы данных всех когда-либо добавленных
+        let allStudents = JSON.parse(localStorage.getItem('allStudents')) || defaultClassList;
+        let allSubjects = JSON.parse(localStorage.getItem('allSubjects')) || defaultSubjectList;
+
+        // Текущая доска (если пусто в памяти - загружаем ПОЛНЫЙ список)
+        let students = JSON.parse(localStorage.getItem('students'));
+        if (!students) students = [...allStudents];
+
+        let subjects = JSON.parse(localStorage.getItem('subjects'));
+        if (!subjects) subjects = [...allSubjects];
+
+        let progress = JSON.parse(localStorage.getItem('progress')) || {}; 
+        let studentColors = JSON.parse(localStorage.getItem('studentColors')) || {}; 
+        
+        let currentModalMode = ''; // 'students' или 'subjects'
+        const emoji = "⭐"; 
+        
+        function getRandomVibrantColor() {
+            const hue = Math.floor(Math.random() * 360);
+            return `hsl(${hue}, 85%, 70%)`; 
+        }
+
+        function saveData() {
+            localStorage.setItem('students', JSON.stringify(students));
+            localStorage.setItem('allStudents', JSON.stringify(allStudents));
+            localStorage.setItem('subjects', JSON.stringify(subjects));
+            localStorage.setItem('allSubjects', JSON.stringify(allSubjects));
+            localStorage.setItem('progress', JSON.stringify(progress));
+            localStorage.setItem('studentColors', JSON.stringify(studentColors));
+        }
+
+        function addNewStudent() {
+            const input = document.getElementById('studentInput');
+            const name = input.value.trim();
+            if (name) {
+                if (!allStudents.includes(name)) allStudents.push(name);
+                if (!students.includes(name)) {
+                    students.push(name);
+                    if (!studentColors[name]) studentColors[name] = getRandomVibrantColor();
+                }
+                input.value = '';
+                saveData(); renderTable();
+            }
+        }
+
+        function addSubject() {
+            const input = document.getElementById('subjectInput');
+            const subject = input.value.trim();
+            if (subject) {
+                if (!allSubjects.includes(subject)) allSubjects.push(subject);
+                if (!subjects.includes(subject)) subjects.push(subject);
+                input.value = '';
+                saveData(); renderTable();
+            }
+        }
+
+        function removeStudent(name) {
+            students = students.filter(s => s !== name);
+            saveData(); renderTable();
+        }
+
+        function removeSubject(subject) {
+            subjects = subjects.filter(s => s !== subject);
+            saveData(); renderTable();
+        }
+
+        function toggleCell(student, subject) {
+            const key = `${student}-${subject}`;
+            progress[key] = !progress[key];
+            saveData(); renderTable();
+        }
+
+        function openModal(mode) {
+            currentModalMode = mode;
+            const list = document.getElementById('checkboxList');
+            const title = document.getElementById('modalTitle');
+            list.innerHTML = '';
+            
+            let allItems = mode === 'students' ? allStudents : allSubjects;
+            let currentItems = mode === 'students' ? students : subjects;
+            title.textContent = mode === 'students' ? 'Кого сегодня нет?' : 'Какие предметы не задали?';
+
+            if (allItems.length === 0) {
+                list.innerHTML = '<p style="color:#636e72;">Список пуст.</p>';
+            } else {
+                let sortedItems = [...allItems].sort((a, b) => a.localeCompare(b, 'ru'));
+                sortedItems.forEach(item => {
+                    const label = document.createElement('label');
+                    label.className = 'checkbox-label';
+                    const isChecked = currentItems.includes(item) ? 'checked' : '';
+                    label.innerHTML = `<input type="checkbox" value="${item}" ${isChecked}> ${item}`;
+                    list.appendChild(label);
+                });
+            }
+            document.getElementById('generalModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('generalModal').style.display = 'none';
+        }
+
+        function applySelection() {
+            const checkboxes = document.querySelectorAll('#checkboxList input[type="checkbox"]');
+            let selected = []; 
+            checkboxes.forEach(cb => { if (cb.checked) selected.push(cb.value); });
+            
+            if (currentModalMode === 'students') {
+                students = selected;
+                students.forEach(s => { if (!studentColors[s]) studentColors[s] = getRandomVibrantColor(); });
+            } else {
+                subjects = selected;
+            }
+            
+            saveData(); renderTable(); closeModal();
+        }
+
+        function resetDay() {
+            if (confirm("Начать новый день? На доску вернутся все ученики и предметы, а звездочки исчезнут.")) {
+                students = [...allStudents]; 
+                subjects = [...allSubjects]; 
+                progress = {}; 
+                saveData(); renderTable();
+            }
+        }
+
+        function renderTable() {
+            const headerRow = document.getElementById('headerRow');
+            const tableBody = document.getElementById('tableBody');
+            
+            headerRow.innerHTML = '<th>Ученики \\ Предметы</th>';
+            tableBody.innerHTML = '';
+
+            // Отрисовка шапки с предметами и крестиками
+            subjects.forEach(subject => {
+                const th = document.createElement('th');
+                th.innerHTML = `
+                    <div class="cell-content">
+                        <span>${subject}</span>
+                        <span class="remove-icon" onclick="removeSubject('${subject}')" title="Убрать колонку">✖</span>
+                    </div>`;
+                headerRow.appendChild(th);
+            });
+
+            // Отрисовка строк с учениками
+            students.forEach(student => {
+                const tr = document.createElement('tr');
+                const tdName = document.createElement('td');
+                tdName.className = 'student-name';
+                
+                if (!studentColors[student]) {
+                    studentColors[student] = getRandomVibrantColor();
+                    saveData();
+                }
+                tdName.style.backgroundColor = studentColors[student];
+                
+                tdName.innerHTML = `
+                    <div class="cell-content">
+                        <span class="remove-icon" onclick="removeStudent('${student}')" title="Отсутствует">✖</span>
+                        <span style="flex-grow: 1; text-align: center;">${student}</span>
+                    </div>`;
+                tr.appendChild(tdName);
+
+                // Отрисовка ячеек для звездочек
+                subjects.forEach(subject => {
+                    const td = document.createElement('td');
+                    td.className = 'star-cell';
+                    const key = `${student}-${subject}`;
+                    
+                    if (progress[key]) {
+                        td.classList.add('done');
+                        td.textContent = emoji;
+                    }
+
+                    td.onclick = () => toggleCell(student, subject);
+                    tr.appendChild(td);
+                });
+
+                tableBody.appendChild(tr);
+            });
+        }
+
+        renderTable();
+    </script>
+</body>
+</html>
