@@ -27,7 +27,7 @@
         h1 { color: #f1c40f; text-align: center; margin-bottom: 5px; font-size: 3rem; text-shadow: 0 0 15px rgba(241, 196, 15, 0.5); margin-top: 0;}
         
         .header-panel { 
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;
+            display: flex; justify-content: space-between; align-items: center; 
             background: rgba(255, 255, 255, 0.1); 
             backdrop-filter: blur(10px);
             padding: 20px 30px; 
@@ -159,7 +159,7 @@
         input[type="checkbox"]:checked::after {
             color: #f1c40f;
             text-shadow: 0 0 15px #f1c40f;
-            transform: translate(-50%, -53%) scale(1.15);
+            transform: translate(-50%, -53%) scale(1.15); /* Немного увеличивается */
         }
 
         /* Анимация Взрыва в 18:00 */
@@ -229,27 +229,9 @@
             { id: 'clean', name: 'Уборка 🧹' }
         ];
 
-        let students = [];
-        let tasksList = [];
-
-        // БРОНИРОВАННАЯ ЗАГРУЗКА ДАННЫХ
-        try {
-            const savedStudents = localStorage.getItem('star_prodlenka_data_v3');
-            const savedTasks = localStorage.getItem('star_prodlenka_tasks_v3');
-            
-            students = savedStudents ? JSON.parse(savedStudents) : defaultStudents;
-            tasksList = savedTasks ? JSON.parse(savedTasks) : defaultTasks;
-
-            // Если данные повредились и стали не-списком, сбрасываем на заводские
-            if (!Array.isArray(students)) students = defaultStudents;
-            if (!Array.isArray(tasksList)) tasksList = defaultTasks;
-
-        } catch (e) {
-            // Если панель жестко блокирует память
-            console.error("Ошибка доступа к памяти браузера:", e);
-            students = defaultStudents;
-            tasksList = defaultTasks;
-        }
+        // Загружаем данные из хранилища
+        let students = JSON.parse(localStorage.getItem('star_prodlenka_data_v2')) || defaultStudents;
+        let tasksList = JSON.parse(localStorage.getItem('star_prodlenka_tasks_v2')) || defaultTasks;
 
         function getRankInfo(stars) {
             if (stars < 10) return { name: "🦥 Ленивец", class: "rank-0" };
@@ -259,18 +241,15 @@
         }
 
         function saveData() {
-            try {
-                localStorage.setItem('star_prodlenka_data_v3', JSON.stringify(students));
-                localStorage.setItem('star_prodlenka_tasks_v3', JSON.stringify(tasksList));
-            } catch (e) {
-                console.error("Не удалось сохранить данные на панели:", e);
-            }
+            localStorage.setItem('star_prodlenka_data_v2', JSON.stringify(students));
+            localStorage.setItem('star_prodlenka_tasks_v2', JSON.stringify(tasksList));
         }
 
         function renderList() {
             const listBody = document.getElementById('listBody');
             const headerRow = document.getElementById('headerRow');
             
+            // Если учеников нет, скрываем шапку
             if (students.length === 0 && tasksList.length === 0) {
                 headerRow.style.display = 'none';
                 listBody.innerHTML = '<h2 style="text-align:center; color:#7f8fa6;">Нет учеников и предметов. Добавьте их!</h2>';
@@ -279,8 +258,10 @@
                 headerRow.style.display = 'grid';
             }
 
+            // Динамическая настройка ширины колонок
             const gridTemplate = `2.5fr 1.5fr 1fr repeat(${tasksList.length}, 1fr)`;
             
+            // Отрисовка шапки
             headerRow.style.gridTemplateColumns = gridTemplate;
             headerRow.innerHTML = `
                 <div>Ученик</div>
@@ -294,6 +275,7 @@
                 `).join('')}
             `;
 
+            // Отрисовка учеников
             listBody.innerHTML = '';
             students.forEach((student, index) => {
                 const rank = getRankInfo(student.stars);
@@ -335,6 +317,7 @@
             saveData();
             renderList();
 
+            // Проверка на салют
             if (tasksList.length > 0) {
                 const allDone = tasksList.every(t => student.tasks[t.id]);
                 if (isChecked && allDone) {
@@ -403,31 +386,29 @@
         }
 
         function fireConfetti() {
-            if (typeof confetti === 'function') {
-                var duration = 3000;
-                var end = Date.now() + duration;
+            var duration = 3000;
+            var end = Date.now() + duration;
 
-                (function frame() {
-                    confetti({
-                        particleCount: 8,
-                        angle: 60,
-                        spread: 55,
-                        origin: { x: 0 },
-                        colors: ['#ff9ff3', '#feca57', '#ff6b6b', '#48dbfb', '#1dd1a1']
-                    });
-                    confetti({
-                        particleCount: 8,
-                        angle: 120,
-                        spread: 55,
-                        origin: { x: 1 },
-                        colors: ['#ff9ff3', '#feca57', '#ff6b6b', '#48dbfb', '#1dd1a1']
-                    });
+            (function frame() {
+                confetti({
+                    particleCount: 8,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ff9ff3', '#feca57', '#ff6b6b', '#48dbfb', '#1dd1a1']
+                });
+                confetti({
+                    particleCount: 8,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ff9ff3', '#feca57', '#ff6b6b', '#48dbfb', '#1dd1a1']
+                });
 
-                    if (Date.now() < end) {
-                        requestAnimationFrame(frame);
-                    }
-                }());
-            }
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
         }
 
         function updateTimer() {
@@ -437,8 +418,6 @@
 
             const diff = deadline - now;
             const timerEl = document.getElementById('timer');
-
-            if (!timerEl) return;
 
             if (diff <= 0) {
                 timerEl.innerText = "ВРЕМЯ ВЫШЛО!";
@@ -455,7 +434,6 @@
             timerEl.innerText = `${h}:${m}:${s}`;
         }
 
-        // Запуск
         renderList();
         setInterval(updateTimer, 1000);
         updateTimer();
