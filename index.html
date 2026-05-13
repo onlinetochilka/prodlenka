@@ -3,401 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Звездная Продленка ⭐</title>
+    <title>Супер-Продленка</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7fe;
-            color: #2d3436;
-            text-align: center;
-            margin: 0;
-            padding: 15px;
-        }
-        h1 {
-            color: #6c5ce7;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 0px #dfe6e9;
-            margin-bottom: 20px;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; padding: 20px; transition: background-color 0.5s; margin: 0;}
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 5px; font-size: 2.5rem;}
         
-        .controls {
-            background: white;
-            padding: 15px 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            display: inline-block;
-            margin-bottom: 25px;
-        }
-        input {
-            padding: 10px 15px;
-            border: 3px solid #a29bfe;
-            border-radius: 12px;
-            font-size: 18px;
-            margin: 5px;
-            outline: none;
-            width: 200px;
-        }
-        input:focus { border-color: #6c5ce7; }
+        .header-panel { display: flex; justify-content: space-between; align-items: center; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px;}
         
-        button {
-            padding: 10px 20px;
-            background-color: #6c5ce7;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin: 5px;
-        }
-        button:hover { background-color: #5f27cd; transform: translateY(-2px); }
+        #timer { font-size: 3.5rem; font-weight: bold; color: #e74c3c; font-family: monospace; background: #fff0f0; padding: 10px 20px; border-radius: 10px; border: 2px solid #ffcccc;}
         
-        .btn-select { background-color: #00cec9; }
-        .btn-select:hover { background-color: #01a3a0; }
+        .controls button { padding: 15px 25px; font-size: 1.2rem; cursor: pointer; border: none; border-radius: 8px; font-weight: bold; margin-left: 10px; color: white; transition: 0.2s;}
+        .btn-add { background-color: #3498db; }
+        .btn-add:hover { background-color: #2980b9; }
+        .btn-reset { background-color: #f39c12; }
+        .btn-reset:hover { background-color: #e67e22; }
 
-        .reset-btn {
-            background-color: #00b894; /* Сделали зеленую жизнеутверждающую кнопку */
-            margin-top: 50px;
-            padding: 15px 30px;
-            font-size: 20px;
-            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
-        }
-        .reset-btn:hover { background-color: #009477; }
-
-        table {
-            margin: 0 auto;
-            border-collapse: separate;
-            border-spacing: 6px;
-        }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); font-size: 1.3rem;}
+        th, td { padding: 20px; text-align: center; border-bottom: 1px solid #ecf0f1; }
+        th { background-color: #2c3e50; color: white; font-weight: normal; }
+        tr:hover { background-color: #f8f9fa; }
         
-        th {
-            background-color: #00cec9;
-            color: #014a48;
-            padding: 10px 15px;
-            border-radius: 12px;
-            font-size: 20px;
-            font-weight: 800;
-            min-width: 150px;
-            max-width: 250px;
-            position: relative;
-        }
+        .student-name { font-weight: bold; color: #34495e; text-align: left;}
+        .rank-badge { display: inline-block; padding: 8px 15px; border-radius: 20px; font-size: 1rem; font-weight: bold; }
         
-        .student-name {
-            color: #2d3436;
-            font-weight: bold;
-            font-size: 22px;
-            padding: 10px 20px;
-            border-radius: 12px;
-            min-width: 180px;
-            position: relative;
-        }
+        /* Цвета званий */
+        .rank-0 { background: #ecf0f1; color: #7f8c8d; } /* Ленивец */
+        .rank-10 { background: #dff9fb; color: #0097e6; } /* Ученикус */
+        .rank-20 { background: #fcf4cb; color: #f39c12; } /* Трудяга */
+        .rank-30 { background: #ffcccc; color: #c0392b; box-shadow: 0 0 10px gold; } /* Легендариус */
 
-        /* Контейнер для текста и крестика */
-        .cell-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Крестики для удаления */
-        .remove-icon {
-            font-size: 16px;
-            color: rgba(0,0,0,0.3);
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            transition: 0.2s;
-        }
-        .remove-icon:hover {
-            color: #d63031;
-            background-color: rgba(255,255,255,0.5);
-        }
+        .stars { font-size: 1.5rem; font-weight: bold; color: #f1c40f; }
         
-        td.star-cell {
-            padding: 0;
-            text-align: center;
-            border-radius: 12px;
-            background-color: white;
-            width: 70px;
-            height: 55px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 3px dashed #dfe6e9;
-            font-size: 40px;
-            user-select: none;
-        }
-        td.star-cell:hover {
-            background-color: #f1f2f6;
-            transform: scale(1.05);
-            border-color: #a29bfe;
-        }
-        
-        .done {
-            background-color: #fff200 !important;
-            border: 3px solid #feca57 !important;
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
+        /* Огромные чекбоксы для интерактивной панели */
+        input[type="checkbox"] { width: 40px; height: 40px; cursor: pointer; accent-color: #27ae60; }
 
-        @keyframes popIn {
-            0% { transform: scale(0.5) rotate(-20deg); opacity: 0; }
-            50% { transform: scale(1.2) rotate(10deg); }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
+        /* Анимация Взрыва в 18:00 */
+        .explosion-mode { background-color: #c0392b !important; animation: shake 0.5s infinite; }
+        .explosion-mode h1, .explosion-mode th, .explosion-mode td { color: white !important; border-color: #e74c3c !important;}
+        .explosion-mode table { background-color: #e74c3c !important; }
+        .explosion-mode #timer { color: white; background: black; border-color: black; }
 
-        /* Модальные окна */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); z-index: 1000;
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
-        .modal {
-            background: white; padding: 30px; border-radius: 20px;
-            width: 450px; max-width: 90%; margin: 50px auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            text-align: left; max-height: 80vh; overflow-y: auto;
-        }
-        .modal h2 { margin-top: 0; color: #6c5ce7; }
-        .checkbox-label {
-            font-size: 20px; display: block; margin: 10px 0; cursor: pointer;
-            padding: 5px; border-radius: 8px; transition: background 0.2s;
-        }
-        .checkbox-label:hover { background: #f1f2f6; }
-        .checkbox-label input { width: 20px; height: 20px; margin-right: 15px; cursor: pointer;}
-        .modal-btns { text-align: right; margin-top: 25px; position: sticky; bottom: -10px; background: white; padding-top: 15px; border-top: 2px solid #f1f2f6;}
-        .close-btn { background: #b2bec3; }
-        .close-btn:hover { background: #636e72; }
     </style>
 </head>
 <body>
 
-    <h1>🚀 Звездная Продленка</h1>
-
-    <div class="controls">
-        <input type="text" id="studentInput" placeholder="Новый ученик">
-        <button onclick="addNewStudent()">+ Ученик</button>
-        <button class="btn-select" onclick="openModal('students')">👥 Список</button>
-        
-        <span style="margin: 0 10px; color: #b2bec3; font-size: 24px;">|</span>
-        
-        <input type="text" id="subjectInput" placeholder="Новый предмет">
-        <button onclick="addSubject()">+ Предмет</button>
-        <button class="btn-select" onclick="openModal('subjects')">📚 Список</button>
-    </div>
-
-    <div id="generalModal" class="modal-overlay">
-        <div class="modal">
-            <h2 id="modalTitle">Выберите нужные пункты</h2>
-            <div id="checkboxList"></div>
-            <div class="modal-btns">
-                <button class="close-btn" onclick="closeModal()">Отмена</button>
-                <button onclick="applySelection()">Готово</button>
-            </div>
+    <div class="header-panel">
+        <div>
+            <h1>🏆 Супер-Продленка</h1>
+        </div>
+        <div id="timer">--:--:--</div>
+        <div class="controls">
+            <button class="btn-add" onclick="addStudent()">+ Добавить ученика</button>
+            <button class="btn-reset" onclick="resetDay()">🌅 Начать новый день</button>
         </div>
     </div>
 
-    <table id="trackerTable">
+    <table id="studentsTable">
         <thead>
-            <tr id="headerRow">
-                <th>Ученики \ Предметы</th>
+            <tr>
+                <th style="text-align: left;">Ученик</th>
+                <th>Звание</th>
+                <th>Всего ⭐</th>
+                <th>Математика</th>
+                <th>Русский</th>
+                <th>Чтение</th>
+                <th>Уборка 🧹</th>
             </tr>
         </thead>
         <tbody id="tableBody">
-        </tbody>
+            </tbody>
     </table>
 
-    <button class="reset-btn" onclick="resetDay()">🔄 Начать новый день (Вернуть весь класс и очистить звездочки)</button>
-
     <script>
-        const defaultClassList = [
-            "Белоцерковцев Лев", "Ельцов Елисей", "Ковалёва Кира", "Котлов Пётр",
-            "Матушкин Георгий", "Новикова Ульяна", "Романова Елизавета", "Рустамова Анастасия",
-            "Сапфиров Егор", "Стрельченко Андрей", "Тавлиди Вероника", "Усов Тимофей"
-        ];
-        
-        const defaultSubjectList = ["Математика", "Русский язык", "Чтение", "Окр. мир", "Английский"];
+        // База данных в браузере (localStorage)
+        let students = JSON.parse(localStorage.getItem('prodlenka_data')) || [];
 
-        // Базы данных всех когда-либо добавленных
-        let allStudents = JSON.parse(localStorage.getItem('allStudents')) || defaultClassList;
-        let allSubjects = JSON.parse(localStorage.getItem('allSubjects')) || defaultSubjectList;
+        const tasksList = ['math', 'rus', 'read', 'clean'];
 
-        // Текущая доска (если пусто в памяти - загружаем ПОЛНЫЙ список)
-        let students = JSON.parse(localStorage.getItem('students'));
-        if (!students) students = [...allStudents];
-
-        let subjects = JSON.parse(localStorage.getItem('subjects'));
-        if (!subjects) subjects = [...allSubjects];
-
-        let progress = JSON.parse(localStorage.getItem('progress')) || {}; 
-        let studentColors = JSON.parse(localStorage.getItem('studentColors')) || {}; 
-        
-        let currentModalMode = ''; // 'students' или 'subjects'
-        const emoji = "⭐"; 
-        
-        function getRandomVibrantColor() {
-            const hue = Math.floor(Math.random() * 360);
-            return `hsl(${hue}, 85%, 70%)`; 
+        function getRankInfo(stars) {
+            if (stars < 10) return { name: "🦥 Ленивец", class: "rank-0" };
+            if (stars < 20) return { name: "🚶 Ученикус обыкновениус", class: "rank-10" };
+            if (stars < 30) return { name: "🛠️ Трудяга", class: "rank-20" };
+            return { name: "👑 Продлёникус легендариус", class: "rank-30" };
         }
 
         function saveData() {
-            localStorage.setItem('students', JSON.stringify(students));
-            localStorage.setItem('allStudents', JSON.stringify(allStudents));
-            localStorage.setItem('subjects', JSON.stringify(subjects));
-            localStorage.setItem('allSubjects', JSON.stringify(allSubjects));
-            localStorage.setItem('progress', JSON.stringify(progress));
-            localStorage.setItem('studentColors', JSON.stringify(studentColors));
-        }
-
-        function addNewStudent() {
-            const input = document.getElementById('studentInput');
-            const name = input.value.trim();
-            if (name) {
-                if (!allStudents.includes(name)) allStudents.push(name);
-                if (!students.includes(name)) {
-                    students.push(name);
-                    if (!studentColors[name]) studentColors[name] = getRandomVibrantColor();
-                }
-                input.value = '';
-                saveData(); renderTable();
-            }
-        }
-
-        function addSubject() {
-            const input = document.getElementById('subjectInput');
-            const subject = input.value.trim();
-            if (subject) {
-                if (!allSubjects.includes(subject)) allSubjects.push(subject);
-                if (!subjects.includes(subject)) subjects.push(subject);
-                input.value = '';
-                saveData(); renderTable();
-            }
-        }
-
-        function removeStudent(name) {
-            students = students.filter(s => s !== name);
-            saveData(); renderTable();
-        }
-
-        function removeSubject(subject) {
-            subjects = subjects.filter(s => s !== subject);
-            saveData(); renderTable();
-        }
-
-        function toggleCell(student, subject) {
-            const key = `${student}-${subject}`;
-            progress[key] = !progress[key];
-            saveData(); renderTable();
-        }
-
-        function openModal(mode) {
-            currentModalMode = mode;
-            const list = document.getElementById('checkboxList');
-            const title = document.getElementById('modalTitle');
-            list.innerHTML = '';
-            
-            let allItems = mode === 'students' ? allStudents : allSubjects;
-            let currentItems = mode === 'students' ? students : subjects;
-            title.textContent = mode === 'students' ? 'Кого сегодня нет?' : 'Какие предметы не задали?';
-
-            if (allItems.length === 0) {
-                list.innerHTML = '<p style="color:#636e72;">Список пуст.</p>';
-            } else {
-                let sortedItems = [...allItems].sort((a, b) => a.localeCompare(b, 'ru'));
-                sortedItems.forEach(item => {
-                    const label = document.createElement('label');
-                    label.className = 'checkbox-label';
-                    const isChecked = currentItems.includes(item) ? 'checked' : '';
-                    label.innerHTML = `<input type="checkbox" value="${item}" ${isChecked}> ${item}`;
-                    list.appendChild(label);
-                });
-            }
-            document.getElementById('generalModal').style.display = 'block';
-        }
-
-        function closeModal() {
-            document.getElementById('generalModal').style.display = 'none';
-        }
-
-        function applySelection() {
-            const checkboxes = document.querySelectorAll('#checkboxList input[type="checkbox"]');
-            let selected = []; 
-            checkboxes.forEach(cb => { if (cb.checked) selected.push(cb.value); });
-            
-            if (currentModalMode === 'students') {
-                students = selected;
-                students.forEach(s => { if (!studentColors[s]) studentColors[s] = getRandomVibrantColor(); });
-            } else {
-                subjects = selected;
-            }
-            
-            saveData(); renderTable(); closeModal();
-        }
-
-        function resetDay() {
-            if (confirm("Начать новый день? На доску вернутся все ученики и предметы, а звездочки исчезнут.")) {
-                students = [...allStudents]; 
-                subjects = [...allSubjects]; 
-                progress = {}; 
-                saveData(); renderTable();
-            }
+            localStorage.setItem('prodlenka_data', JSON.stringify(students));
         }
 
         function renderTable() {
-            const headerRow = document.getElementById('headerRow');
-            const tableBody = document.getElementById('tableBody');
-            
-            headerRow.innerHTML = '<th>Ученики \\ Предметы</th>';
-            tableBody.innerHTML = '';
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
 
-            // Отрисовка шапки с предметами и крестиками
-            subjects.forEach(subject => {
-                const th = document.createElement('th');
-                th.innerHTML = `
-                    <div class="cell-content">
-                        <span>${subject}</span>
-                        <span class="remove-icon" onclick="removeSubject('${subject}')" title="Убрать колонку">✖</span>
-                    </div>`;
-                headerRow.appendChild(th);
-            });
-
-            // Отрисовка строк с учениками
-            students.forEach(student => {
+            students.forEach((student, index) => {
+                const rank = getRankInfo(student.stars);
+                
                 const tr = document.createElement('tr');
-                const tdName = document.createElement('td');
-                tdName.className = 'student-name';
-                
-                if (!studentColors[student]) {
-                    studentColors[student] = getRandomVibrantColor();
-                    saveData();
-                }
-                tdName.style.backgroundColor = studentColors[student];
-                
-                tdName.innerHTML = `
-                    <div class="cell-content">
-                        <span class="remove-icon" onclick="removeStudent('${student}')" title="Отсутствует">✖</span>
-                        <span style="flex-grow: 1; text-align: center;">${student}</span>
-                    </div>`;
-                tr.appendChild(tdName);
-
-                // Отрисовка ячеек для звездочек
-                subjects.forEach(subject => {
-                    const td = document.createElement('td');
-                    td.className = 'star-cell';
-                    const key = `${student}-${subject}`;
-                    
-                    if (progress[key]) {
-                        td.classList.add('done');
-                        td.textContent = emoji;
-                    }
-
-                    td.onclick = () => toggleCell(student, subject);
-                    tr.appendChild(td);
-                });
-
-                tableBody.appendChild(tr);
+                tr.innerHTML = `
+                    <td class="student-name">${student.name}</td>
+                    <td><span class="rank-badge ${rank.class}">${rank.name}</span></td>
+                    <td class="stars">${student.stars} ⭐</td>
+                    ${tasksList.map(task => `
+                        <td>
+                            <input type="checkbox" 
+                                   ${student.tasks[task] ? 'checked' : ''} 
+                                   onchange="toggleTask(${index}, '${task}', this.checked)">
+                        </td>
+                    `).join('')}
+                `;
+                tbody.appendChild(tr);
             });
         }
 
+        function toggleTask(studentIndex, task, isChecked) {
+            const student = students[studentIndex];
+            
+            // Начисляем или забираем звезду
+            student.tasks[task] = isChecked;
+            if (isChecked) {
+                student.stars += 1;
+            } else {
+                student.stars -= 1;
+            }
+            
+            saveData();
+            renderTable();
+
+            // Проверка: выполнены ли все 4 задания за сегодня?
+            const allDone = tasksList.every(t => student.tasks[t]);
+            if (isChecked && allDone) {
+                fireConfetti();
+            }
+        }
+
+        function addStudent() {
+            const name = prompt("Введите имя и фамилию ученика:");
+            if (name && name.trim() !== "") {
+                students.push({
+                    name: name.trim(),
+                    stars: 0,
+                    tasks: { math: false, rus: false, read: false, clean: false }
+                });
+                saveData();
+                renderTable();
+            }
+        }
+
+        // Сброс галочек на следующий день (но звезды остаются!)
+        function resetDay() {
+            if (confirm("Вы уверены, что хотите сбросить галочки? (Накопленные звезды и звания сохранятся!)")) {
+                students.forEach(student => {
+                    tasksList.forEach(task => student.tasks[task] = false);
+                });
+                saveData();
+                renderTable();
+            }
+        }
+
+        // Анимация салюта
+        function fireConfetti() {
+            var duration = 3000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        // Таймер Судного Дня
+        function updateTimer() {
+            const now = new Date();
+            // Устанавливаем цель: сегодня в 18:00:00
+            const deadline = new Date();
+            deadline.setHours(18, 0, 0, 0);
+
+            const diff = deadline - now;
+            const timerEl = document.getElementById('timer');
+
+            if (diff <= 0) {
+                timerEl.innerText = "ВРЕМЯ ВЫШЛО!";
+                document.body.classList.add('explosion-mode');
+                return;
+            }
+
+            // Убираем режим взрыва, если время еще есть (например, наступил новый день)
+            document.body.classList.remove('explosion-mode');
+
+            const h = Math.floor((diff / (1000 * 60 * 60)) % 24).toString().padStart(2, '0');
+            const m = Math.floor((diff / 1000 / 60) % 60).toString().padStart(2, '0');
+            const s = Math.floor((diff / 1000) % 60).toString().padStart(2, '0');
+
+            timerEl.innerText = `${h}:${m}:${s}`;
+        }
+
+        // Запуск
         renderTable();
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
     </script>
 </body>
 </html>
