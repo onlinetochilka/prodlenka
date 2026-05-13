@@ -3,50 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Супер-Продленка</title>
+    <title>Звездная Продленка</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; padding: 20px; transition: background-color 0.5s; margin: 0;}
-        h1 { color: #2c3e50; text-align: center; margin-bottom: 5px; font-size: 2.5rem;}
-        
-        .header-panel { display: flex; justify-content: space-between; align-items: center; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px;}
-        
-        #timer { font-size: 3.5rem; font-weight: bold; color: #e74c3c; font-family: monospace; background: #fff0f0; padding: 10px 20px; border-radius: 10px; border: 2px solid #ffcccc;}
-        
-        .controls button { padding: 15px 25px; font-size: 1.2rem; cursor: pointer; border: none; border-radius: 8px; font-weight: bold; margin-left: 10px; color: white; transition: 0.2s;}
-        .btn-add { background-color: #3498db; }
-        .btn-add:hover { background-color: #2980b9; }
-        .btn-reset { background-color: #f39c12; }
-        .btn-reset:hover { background-color: #e67e22; }
+        /* Космическая тема */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #1a0b2e, #4b1d52, #1a0b2e); 
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #ffffff; 
+            padding: 20px; 
+            margin: 0;
+            min-height: 100vh;
+        }
 
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); font-size: 1.3rem;}
-        th, td { padding: 20px; text-align: center; border-bottom: 1px solid #ecf0f1; }
-        th { background-color: #2c3e50; color: white; font-weight: normal; }
-        tr:hover { background-color: #f8f9fa; }
-        
-        .student-name { font-weight: bold; color: #34495e; text-align: left;}
-        .rank-badge { display: inline-block; padding: 8px 15px; border-radius: 20px; font-size: 1rem; font-weight: bold; }
-        
-        /* Цвета званий */
-        .rank-0 { background: #ecf0f1; color: #7f8c8d; } /* Ленивец */
-        .rank-10 { background: #dff9fb; color: #0097e6; } /* Ученикус */
-        .rank-20 { background: #fcf4cb; color: #f39c12; } /* Трудяга */
-        .rank-30 { background: #ffcccc; color: #c0392b; box-shadow: 0 0 10px gold; } /* Легендариус */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-        .stars { font-size: 1.5rem; font-weight: bold; color: #f1c40f; }
+        h1 { color: #f1c40f; text-align: center; margin-bottom: 5px; font-size: 3rem; text-shadow: 0 0 15px rgba(241, 196, 15, 0.5); margin-top: 0;}
         
-        /* Огромные чекбоксы для интерактивной панели */
-        input[type="checkbox"] { width: 40px; height: 40px; cursor: pointer; accent-color: #27ae60; }
+        .header-panel { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(10px);
+            padding: 20px 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3); 
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 30px;
+        }
+        
+        #timer { 
+            font-size: 3.5rem; font-weight: bold; color: #ff9ff3; 
+            font-family: monospace; 
+            background: rgba(0,0,0,0.3); 
+            padding: 10px 25px; 
+            border-radius: 15px; 
+            border: 2px solid #ff9ff3;
+            text-shadow: 0 0 10px #ff9ff3;
+            box-shadow: 0 0 15px rgba(255, 159, 243, 0.2) inset;
+        }
+        
+        .controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;}
+        
+        .controls button { 
+            padding: 12px 20px; font-size: 1.1rem; cursor: pointer; border: none; 
+            border-radius: 12px; font-weight: bold; color: white; transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .btn-add { background: linear-gradient(45deg, #0984e3, #74b9ff); }
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(9, 132, 227, 0.4); }
+        .btn-add-task { background: linear-gradient(45deg, #6c5ce7, #a29bfe); }
+        .btn-add-task:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4); }
+        .btn-reset { background: linear-gradient(45deg, #d35400, #e67e22); }
+        .btn-reset:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(211, 84, 0, 0.4); }
+
+        /* Структурированный список */
+        .student-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .student-row {
+            display: grid;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 15px 20px;
+            transition: 0.3s;
+        }
+        .student-row:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.01);
+        }
+
+        .header-row {
+            background: rgba(0, 0, 0, 0.4);
+            font-weight: bold;
+            color: #bdc3c7;
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+        }
+
+        .col-center { text-align: center; }
+        
+        .student-name { font-weight: bold; font-size: 1.3rem; color: #fff; display: flex; align-items: center; justify-content: space-between;}
+        .task-header { display: flex; align-items: center; justify-content: center; gap: 5px; }
+
+        .rank-badge { display: inline-block; padding: 8px 15px; border-radius: 20px; font-size: 1rem; font-weight: bold; text-shadow: none;}
+        
+        /* Неоновые цвета званий */
+        .rank-0 { background: #2d3436; color: #b2bec3; border: 1px solid #b2bec3;} 
+        .rank-10 { background: rgba(0, 210, 211, 0.2); color: #00d2d1; border: 1px solid #00d2d1;} 
+        .rank-20 { background: rgba(253, 203, 110, 0.2); color: #fdcb6e; border: 1px solid #fdcb6e;} 
+        .rank-30 { background: rgba(255, 118, 117, 0.2); color: #ff7675; border: 1px solid #ff7675; box-shadow: 0 0 15px rgba(255, 118, 117, 0.5); } 
+
+        .stars { font-size: 1.6rem; font-weight: bold; color: #f1c40f; text-shadow: 0 0 10px rgba(241, 196, 15, 0.5);}
+        
+        /* Кнопки удаления (крестики) */
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #ff7675;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            opacity: 0.6;
+            transition: 0.2s;
+            line-height: 1;
+        }
+        .btn-delete:hover { opacity: 1; transform: scale(1.2) rotate(90deg); color: #ff4757; }
+
+        /* Огромные ЗВЕЗДОЧКИ для пальцев */
+        input[type="checkbox"] { 
+            appearance: none;
+            width: 45px; height: 45px; 
+            cursor: pointer; 
+            border: 3px solid #576574;
+            border-radius: 10px;
+            background: rgba(0,0,0,0.2);
+            position: relative;
+            transition: 0.3s;
+            margin: 0 auto;
+            display: block;
+        }
+        input[type="checkbox"]:hover {
+            border-color: #f1c40f;
+        }
+        
+        /* Потухшая звездочка по умолчанию */
+        input[type="checkbox"]::after {
+            content: '★';
+            position: absolute;
+            color: rgba(255, 255, 255, 0.1);
+            font-size: 35px;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -53%); 
+            transition: 0.3s;
+        }
+        
+        /* Загоревшаяся звездочка при нажатии */
+        input[type="checkbox"]:checked {
+            background: rgba(241, 196, 15, 0.1);
+            border-color: #f1c40f;
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.4);
+        }
+        input[type="checkbox"]:checked::after {
+            color: #f1c40f;
+            text-shadow: 0 0 15px #f1c40f;
+            transform: translate(-50%, -53%) scale(1.15); /* Немного увеличивается */
+        }
 
         /* Анимация Взрыва в 18:00 */
-        .explosion-mode { background-color: #c0392b !important; animation: shake 0.5s infinite; }
-        .explosion-mode h1, .explosion-mode th, .explosion-mode td { color: white !important; border-color: #e74c3c !important;}
-        .explosion-mode table { background-color: #e74c3c !important; }
-        .explosion-mode #timer { color: white; background: black; border-color: black; }
+        .explosion-mode { background: #c0392b !important; animation: shake 0.5s infinite; }
+        .explosion-mode h1, .explosion-mode .student-name { color: white !important; text-shadow: 0 0 20px white;}
+        .explosion-mode #timer { color: white; background: black; border-color: black; box-shadow: 0 0 30px black;}
 
         @keyframes shake {
             0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            10% { transform: translate(-2px, -2px) rotate(-1deg); }
             20% { transform: translate(-3px, 0px) rotate(1deg); }
             30% { transform: translate(3px, 2px) rotate(0deg); }
             40% { transform: translate(1px, -1px) rotate(1deg); }
@@ -63,175 +186,6 @@
 
     <div class="header-panel">
         <div>
-            <h1>🏆 Супер-Продленка</h1>
+            <h1>🌟 Звездная Продленка</h1>
         </div>
-        <div id="timer">--:--:--</div>
-        <div class="controls">
-            <button class="btn-add" onclick="addStudent()">+ Добавить ученика</button>
-            <button class="btn-reset" onclick="resetDay()">🌅 Начать новый день</button>
-        </div>
-    </div>
-
-    <table id="studentsTable">
-        <thead>
-            <tr>
-                <th style="text-align: left;">Ученик</th>
-                <th>Звание</th>
-                <th>Всего ⭐</th>
-                <th>Математика</th>
-                <th>Русский</th>
-                <th>Чтение</th>
-                <th>Уборка 🧹</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-            </tbody>
-    </table>
-
-    <script>
-        // База данных в браузере (localStorage)
-        let students = JSON.parse(localStorage.getItem('prodlenka_data')) || [];
-
-        const tasksList = ['math', 'rus', 'read', 'clean'];
-
-        function getRankInfo(stars) {
-            if (stars < 10) return { name: "🦥 Ленивец", class: "rank-0" };
-            if (stars < 20) return { name: "🚶 Ученикус обыкновениус", class: "rank-10" };
-            if (stars < 30) return { name: "🛠️ Трудяга", class: "rank-20" };
-            return { name: "👑 Продлёникус легендариус", class: "rank-30" };
-        }
-
-        function saveData() {
-            localStorage.setItem('prodlenka_data', JSON.stringify(students));
-        }
-
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-
-            students.forEach((student, index) => {
-                const rank = getRankInfo(student.stars);
-                
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="student-name">${student.name}</td>
-                    <td><span class="rank-badge ${rank.class}">${rank.name}</span></td>
-                    <td class="stars">${student.stars} ⭐</td>
-                    ${tasksList.map(task => `
-                        <td>
-                            <input type="checkbox" 
-                                   ${student.tasks[task] ? 'checked' : ''} 
-                                   onchange="toggleTask(${index}, '${task}', this.checked)">
-                        </td>
-                    `).join('')}
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function toggleTask(studentIndex, task, isChecked) {
-            const student = students[studentIndex];
-            
-            // Начисляем или забираем звезду
-            student.tasks[task] = isChecked;
-            if (isChecked) {
-                student.stars += 1;
-            } else {
-                student.stars -= 1;
-            }
-            
-            saveData();
-            renderTable();
-
-            // Проверка: выполнены ли все 4 задания за сегодня?
-            const allDone = tasksList.every(t => student.tasks[t]);
-            if (isChecked && allDone) {
-                fireConfetti();
-            }
-        }
-
-        function addStudent() {
-            const name = prompt("Введите имя и фамилию ученика:");
-            if (name && name.trim() !== "") {
-                students.push({
-                    name: name.trim(),
-                    stars: 0,
-                    tasks: { math: false, rus: false, read: false, clean: false }
-                });
-                saveData();
-                renderTable();
-            }
-        }
-
-        // Сброс галочек на следующий день (но звезды остаются!)
-        function resetDay() {
-            if (confirm("Вы уверены, что хотите сбросить галочки? (Накопленные звезды и звания сохранятся!)")) {
-                students.forEach(student => {
-                    tasksList.forEach(task => student.tasks[task] = false);
-                });
-                saveData();
-                renderTable();
-            }
-        }
-
-        // Анимация салюта
-        function fireConfetti() {
-            var duration = 3000;
-            var end = Date.now() + duration;
-
-            (function frame() {
-                confetti({
-                    particleCount: 5,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0 },
-                    colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff']
-                });
-                confetti({
-                    particleCount: 5,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1 },
-                    colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff']
-                });
-
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
-                }
-            }());
-        }
-
-        // Таймер Судного Дня
-        function updateTimer() {
-            const now = new Date();
-            // Устанавливаем цель: сегодня в 18:00:00
-            const deadline = new Date();
-            deadline.setHours(18, 0, 0, 0);
-
-            const diff = deadline - now;
-            const timerEl = document.getElementById('timer');
-
-            if (diff <= 0) {
-                timerEl.innerText = "ВРЕМЯ ВЫШЛО!";
-                document.body.classList.add('explosion-mode');
-                return;
-            }
-
-            // Убираем режим взрыва, если время еще есть (например, наступил новый день)
-            document.body.classList.remove('explosion-mode');
-
-            const h = Math.floor((diff / (1000 * 60 * 60)) % 24).toString().padStart(2, '0');
-            const m = Math.floor((diff / 1000 / 60) % 60).toString().padStart(2, '0');
-            const s = Math.floor((diff / 1000) % 60).toString().padStart(2, '0');
-
-            timerEl.innerText = `${h}:${m}:${s}`;
-        }
-
-        // Запуск
-        renderTable();
-        setInterval(updateTimer, 1000);
-        updateTimer();
-
-    </script>
-</body>
-</html>
+        <div id="timer">--:--:
