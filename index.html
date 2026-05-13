@@ -6,437 +6,266 @@
     <title>Звездная Продленка</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        /* Космическая тема */
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: linear-gradient(135deg, #1a0b2e, #4b1d52, #1a0b2e); 
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            color: #ffffff; 
-            padding: 20px; 
-            margin: 0;
-            min-height: 100vh;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        h1 { color: #f1c40f; text-align: center; margin-bottom: 5px; font-size: 3rem; text-shadow: 0 0 15px rgba(241, 196, 15, 0.5); margin-top: 0;}
+        /* СВЕТЛЫЙ ОПТИМИЗИРОВАННЫЙ CSS */
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #ffffff; color: #333333; padding: 20px; margin: 0; min-height: 100vh; }
+        h1 { color: #f39c12; text-align: center; font-size: 3rem; margin: 0 0 5px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
         
-        .header-panel { 
-            display: flex; justify-content: space-between; align-items: center; 
-            background: rgba(255, 255, 255, 0.1); 
-            backdrop-filter: blur(10px);
-            padding: 20px 30px; 
-            border-radius: 20px; 
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3); 
-            border: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 30px;
-        }
+        .header-panel { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; background: #f8f9fa; padding: 20px 30px; border-radius: 20px; border: 1px solid #e9ecef; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         
-        #timer { 
-            font-size: 3.5rem; font-weight: bold; color: #ff9ff3; 
-            font-family: monospace; 
-            background: rgba(0,0,0,0.3); 
-            padding: 10px 25px; 
-            border-radius: 15px; 
-            border: 2px solid #ff9ff3;
-            text-shadow: 0 0 10px #ff9ff3;
-            box-shadow: 0 0 15px rgba(255, 159, 243, 0.2) inset;
-        }
+        #timer { font-size: 3rem; font-weight: bold; color: #e74c3c; font-family: monospace; background: #fff0f0; padding: 10px 20px; border-radius: 15px; border: 2px solid #ffcccc; }
         
-        .controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;}
+        .controls button { padding: 12px 20px; font-size: 1.1rem; cursor: pointer; border: none; border-radius: 12px; font-weight: bold; color: white; margin-left: 5px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-add { background: #3498db; } .btn-task { background: #9b59b6; } .btn-reset { background: #e67e22; }
+        .controls button:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
         
-        .controls button { 
-            padding: 12px 20px; font-size: 1.1rem; cursor: pointer; border: none; 
-            border-radius: 12px; font-weight: bold; color: white; transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        .btn-add { background: linear-gradient(45deg, #0984e3, #74b9ff); }
-        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(9, 132, 227, 0.4); }
-        .btn-add-task { background: linear-gradient(45deg, #6c5ce7, #a29bfe); }
-        .btn-add-task:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4); }
-        .btn-reset { background: linear-gradient(45deg, #d35400, #e67e22); }
-        .btn-reset:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(211, 84, 0, 0.4); }
-
-        /* Структурированный список */
-        .student-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .student-row {
-            display: grid;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 15px 20px;
-            transition: 0.3s;
-        }
-        .student-row:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: scale(1.01);
-        }
-
-        .header-row {
-            background: rgba(0, 0, 0, 0.4);
-            font-weight: bold;
-            color: #bdc3c7;
-            padding: 15px 20px;
-            border-radius: 15px;
-            margin-bottom: 10px;
-        }
-
+        /* Сетка списка */
+        .student-row { display: grid; align-items: center; background: #ffffff; border: 1px solid #e9ecef; border-radius: 15px; padding: 15px; margin-bottom: 10px; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .student-row:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.08); transform: translateY(-1px); border-color: #dee2e6; }
+        .header-row { background: #f1f3f5; font-weight: bold; color: #495057; border: none; box-shadow: none; }
+        .header-row:hover { box-shadow: none; transform: none; border-color: transparent; }
+        
         .col-center { text-align: center; }
+        .student-name { font-size: 1.3rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; color: #2c3e50; }
         
-        .student-name { font-weight: bold; font-size: 1.3rem; color: #fff; display: flex; align-items: center; justify-content: space-between;}
-        .task-header { display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .rank-badge { padding: 6px 14px; border-radius: 20px; font-size: 1rem; font-weight: bold; }
+        .rank-0 { background: #f8f9fa; color: #adb5bd; border: 1px solid #dee2e6; } 
+        .rank-10 { background: #e3fafc; color: #0c8599; border: 1px solid #99e9f2; } 
+        .rank-20 { background: #fff3bf; color: #f08c00; border: 1px solid #ffec99; } 
+        .rank-30 { background: #ffe3e3; color: #e03131; border: 1px solid #ffc9c9; box-shadow: 0 0 10px rgba(224, 49, 49, 0.2); }
+        
+        .stars { font-size: 1.6rem; color: #f1c40f; font-weight: bold; }
+        .btn-delete { background: none; border: none; color: #fa5252; font-size: 1.2rem; cursor: pointer; opacity: 0.5; transition: 0.2s; }
+        .btn-delete:hover { opacity: 1; transform: scale(1.2); color: #e03131; }
+        
+        /* Светлые чекбоксы-звездочки */
+        input[type="checkbox"] { appearance: none; width: 45px; height: 45px; cursor: pointer; border: 2px solid #ced4da; border-radius: 12px; background: #f8f9fa; position: relative; margin: 0 auto; display: block; transition: 0.2s; }
+        input[type="checkbox"]::after { content: '★'; position: absolute; color: #dee2e6; font-size: 32px; top: 50%; left: 50%; transform: translate(-50%, -53%); transition: 0.2s; }
+        input[type="checkbox"]:hover { border-color: #adb5bd; }
+        input[type="checkbox"]:checked { background: #fff9db; border-color: #f1c40f; box-shadow: 0 0 10px rgba(241,196,15,0.2); }
+        input[type="checkbox"]:checked::after { color: #f1c40f; text-shadow: 0 0 5px rgba(241,196,15,0.4); transform: translate(-50%, -53%) scale(1.1); }
 
-        .rank-badge { display: inline-block; padding: 8px 15px; border-radius: 20px; font-size: 1rem; font-weight: bold; text-shadow: none;}
-        
-        /* Неоновые цвета званий */
-        .rank-0 { background: #2d3436; color: #b2bec3; border: 1px solid #b2bec3;} 
-        .rank-10 { background: rgba(0, 210, 211, 0.2); color: #00d2d1; border: 1px solid #00d2d1;} 
-        .rank-20 { background: rgba(253, 203, 110, 0.2); color: #fdcb6e; border: 1px solid #fdcb6e;} 
-        .rank-30 { background: rgba(255, 118, 117, 0.2); color: #ff7675; border: 1px solid #ff7675; box-shadow: 0 0 15px rgba(255, 118, 117, 0.5); } 
-
-        .stars { font-size: 1.6rem; font-weight: bold; color: #f1c40f; text-shadow: 0 0 10px rgba(241, 196, 15, 0.5);}
-        
-        /* Кнопки удаления (крестики) */
-        .btn-delete {
-            background: none;
-            border: none;
-            color: #ff7675;
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 5px;
-            opacity: 0.6;
-            transition: 0.2s;
-            line-height: 1;
-        }
-        .btn-delete:hover { opacity: 1; transform: scale(1.2) rotate(90deg); color: #ff4757; }
-
-        /* Огромные ЗВЕЗДОЧКИ для пальцев */
-        input[type="checkbox"] { 
-            appearance: none;
-            width: 45px; height: 45px; 
-            cursor: pointer; 
-            border: 3px solid #576574;
-            border-radius: 10px;
-            background: rgba(0,0,0,0.2);
-            position: relative;
-            transition: 0.3s;
-            margin: 0 auto;
-            display: block;
-        }
-        input[type="checkbox"]:hover {
-            border-color: #f1c40f;
-        }
-        
-        /* Потухшая звездочка по умолчанию */
-        input[type="checkbox"]::after {
-            content: '★';
-            position: absolute;
-            color: rgba(255, 255, 255, 0.1);
-            font-size: 35px;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -53%); 
-            transition: 0.3s;
-        }
-        
-        /* Загоревшаяся звездочка при нажатии */
-        input[type="checkbox"]:checked {
-            background: rgba(241, 196, 15, 0.1);
-            border-color: #f1c40f;
-            box-shadow: 0 0 15px rgba(241, 196, 15, 0.4);
-        }
-        input[type="checkbox"]:checked::after {
-            color: #f1c40f;
-            text-shadow: 0 0 15px #f1c40f;
-            transform: translate(-50%, -53%) scale(1.15); /* Немного увеличивается */
-        }
-
-        /* Анимация Взрыва в 18:00 */
         .explosion-mode { background: #c0392b !important; animation: shake 0.5s infinite; }
-        .explosion-mode h1, .explosion-mode .student-name { color: white !important; text-shadow: 0 0 20px white;}
-        .explosion-mode #timer { color: white; background: black; border-color: black; box-shadow: 0 0 30px black;}
-
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-2px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
-        }
+        .explosion-mode h1, .explosion-mode .student-name, .explosion-mode .header-row { color: white !important; }
+        .explosion-mode .student-row { background: transparent; border-color: rgba(255,255,255,0.3); }
+        @keyframes shake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(-2px,2px); } 50% { transform: translate(2px,-2px); } 75% { transform: translate(-2px,-2px); } }
+        #errorLog { display: none; background: #e74c3c; color: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-weight: bold; border: 2px solid #c0392b; }
     </style>
 </head>
 <body>
 
-    <div class="header-panel">
-        <div>
-            <h1>🌟 Звездная Продленка</h1>
-        </div>
-        <div id="timer">--:--:--</div>
-        <div class="controls">
-            <button class="btn-add" onclick="addStudent()">+ Ученик</button>
-            <button class="btn-add-task" onclick="addTask()">+ Предмет</button>
-            <button class="btn-reset" onclick="resetDay()">🌅 Новый день</button>
-        </div>
-    </div>
-
-    <div class="student-list">
-        <div class="student-row header-row" id="headerRow">
-            </div>
-        <div id="listBody">
-            </div>
-    </div>
+    <div id="errorLog"></div>
 
     <script>
-        // Исходный список учеников
-        const defaultStudents = [
-            { name: "Белоцерковцев Лев", stars: 0, tasks: {} },
-            { name: "Ельцов Елисей", stars: 0, tasks: {} },
-            { name: "Ковалёва Кира", stars: 0, tasks: {} },
-            { name: "Котлов Пётр", stars: 0, tasks: {} },
-            { name: "Матушкин Георгий", stars: 0, tasks: {} },
-            { name: "Новикова Ульяна", stars: 0, tasks: {} },
-            { name: "Романова Елизавета", stars: 0, tasks: {} },
-            { name: "Рустамова Анастасия", stars: 0, tasks: {} },
-            { name: "Сапфиров Егор", stars: 0, tasks: {} },
-            { name: "Стрельченко Андрей", stars: 0, tasks: {} },
-            { name: "Тавлиди Вероника", stars: 0, tasks: {} },
-            { name: "Усов Тимофей", stars: 0, tasks: {} }
-        ];
+        window.onerror = function(msg, url, line) {
+            const log = document.getElementById('errorLog');
+            log.style.display = 'block';
+            log.innerHTML += `🛑 Системный сбой: ${msg} (Строка: ${line})<br>`;
+            return false;
+        };
+    </script>
 
-        // Исходный список предметов
-        const defaultTasks = [
-            { id: 'math', name: 'Математика 📐' },
-            { id: 'rus', name: 'Русский 📚' },
-            { id: 'read', name: 'Чтение 📖' },
-            { id: 'world', name: 'Окр. мир 🌍' },
-            { id: 'clean', name: 'Уборка 🧹' }
-        ];
+    <div class="header-panel">
+        <h1>🌟 Звездная Продленка</h1>
+        <div id="timer">--:--:--</div>
+        <div class="controls">
+            <button class="btn-add" onclick="app.addStudent()">+ Ученик</button>
+            <button class="btn-task" onclick="app.addTask()">+ Предмет</button>
+            <button class="btn-reset" onclick="app.resetDay()">🌅 Новый день</button>
+        </div>
+    </div>
 
-        // Загружаем данные из хранилища
-        let students = JSON.parse(localStorage.getItem('star_prodlenka_data_v2')) || defaultStudents;
-        let tasksList = JSON.parse(localStorage.getItem('star_prodlenka_tasks_v2')) || defaultTasks;
+    <div id="listBody"></div>
 
-        function getRankInfo(stars) {
-            if (stars < 10) return { name: "🦥 Ленивец", class: "rank-0" };
-            if (stars < 20) return { name: "🚶 Ученикус обыкновениус", class: "rank-10" };
-            if (stars < 30) return { name: "🛠️ Трудяга", class: "rank-20" };
-            return { name: "👑 Продлёникус легендариус", class: "rank-30" };
-        }
+    <script>
+        const app = {
+            students: [],
+            tasks: [],
+            storageKeyData: 'sp_data_v4',
+            storageKeyTasks: 'sp_tasks_v4',
 
-        function saveData() {
-            localStorage.setItem('star_prodlenka_data_v2', JSON.stringify(students));
-            localStorage.setItem('star_prodlenka_tasks_v2', JSON.stringify(tasksList));
-        }
+            init() {
+                this.loadData();
+                this.render();
+                setInterval(() => this.updateTimer(), 1000);
+                this.updateTimer();
+            },
 
-        function renderList() {
-            const listBody = document.getElementById('listBody');
-            const headerRow = document.getElementById('headerRow');
-            
-            // Если учеников нет, скрываем шапку
-            if (students.length === 0 && tasksList.length === 0) {
-                headerRow.style.display = 'none';
-                listBody.innerHTML = '<h2 style="text-align:center; color:#7f8fa6;">Нет учеников и предметов. Добавьте их!</h2>';
-                return;
-            } else {
-                headerRow.style.display = 'grid';
-            }
+            loadData() {
+                try {
+                    const s = localStorage.getItem(this.storageKeyData);
+                    const t = localStorage.getItem(this.storageKeyTasks);
+                    
+                    this.students = s ? JSON.parse(s) : [
+                        { name: "Белоцерковцев Лев", stars: 0, tasks: {} },
+                        { name: "Ельцов Елисей", stars: 0, tasks: {} },
+                        { name: "Ковалёва Кира", stars: 0, tasks: {} },
+                        { name: "Котлов Пётр", stars: 0, tasks: {} },
+                        { name: "Матушкин Георгий", stars: 0, tasks: {} },
+                        { name: "Новикова Ульяна", stars: 0, tasks: {} },
+                        { name: "Романова Елизавета", stars: 0, tasks: {} },
+                        { name: "Рустамова Анастасия", stars: 0, tasks: {} },
+                        { name: "Сапфиров Егор", stars: 0, tasks: {} },
+                        { name: "Стрельченко Андрей", stars: 0, tasks: {} },
+                        { name: "Тавлиди Вероника", stars: 0, tasks: {} },
+                        { name: "Усов Тимофей", stars: 0, tasks: {} }
+                    ];
+                    
+                    this.tasks = t ? JSON.parse(t) : [
+                        { id: 't1', name: 'Математика 📐' },
+                        { id: 't2', name: 'Русский 📚' },
+                        { id: 't3', name: 'Чтение 📖' },
+                        { id: 't4', name: 'Окр. мир 🌍' },
+                        { id: 't5', name: 'Уборка 🧹' }
+                    ];
 
-            // Динамическая настройка ширины колонок
-            const gridTemplate = `2.5fr 1.5fr 1fr repeat(${tasksList.length}, 1fr)`;
-            
-            // Отрисовка шапки
-            headerRow.style.gridTemplateColumns = gridTemplate;
-            headerRow.innerHTML = `
-                <div>Ученик</div>
-                <div>Звание</div>
-                <div class="col-center">Всего ⭐</div>
-                ${tasksList.map(t => `
-                    <div class="col-center task-header">
-                        ${t.name}
-                        <button class="btn-delete" title="Удалить предмет" onclick="deleteTask('${t.id}')">✖</button>
-                    </div>
-                `).join('')}
-            `;
+                    if (!Array.isArray(this.students)) this.students = [];
+                    if (!Array.isArray(this.tasks)) this.tasks = [];
 
-            // Отрисовка учеников
-            listBody.innerHTML = '';
-            students.forEach((student, index) => {
-                const rank = getRankInfo(student.stars);
-                if (!student.tasks) student.tasks = {};
-
-                const row = document.createElement('div');
-                row.className = 'student-row';
-                row.style.gridTemplateColumns = gridTemplate;
-                
-                row.innerHTML = `
-                    <div class="student-name">
-                        ${student.name}
-                        <button class="btn-delete" title="Удалить ученика" onclick="deleteStudent(${index})">✖</button>
-                    </div>
-                    <div><span class="rank-badge ${rank.class}">${rank.name}</span></div>
-                    <div class="stars col-center">${student.stars}</div>
-                    ${tasksList.map(task => `
-                        <div class="col-center">
-                            <input type="checkbox" 
-                                   ${student.tasks[task.id] ? 'checked' : ''} 
-                                   onchange="toggleTask(${index}, '${task.id}', this.checked)">
-                        </div>
-                    `).join('')}
-                `;
-                listBody.appendChild(row);
-            });
-        }
-
-        function toggleTask(studentIndex, taskId, isChecked) {
-            const student = students[studentIndex];
-            
-            student.tasks[taskId] = isChecked;
-            if (isChecked) {
-                student.stars += 1;
-            } else {
-                student.stars -= 1;
-            }
-            
-            saveData();
-            renderList();
-
-            // Проверка на салют
-            if (tasksList.length > 0) {
-                const allDone = tasksList.every(t => student.tasks[t.id]);
-                if (isChecked && allDone) {
-                    fireConfetti();
+                } catch (e) {
+                    throw new Error("Сбой чтения памяти интерактивной панели");
                 }
-            }
-        }
+            },
 
-        function addStudent() {
-            const name = prompt("Введите имя ученика:");
-            if (name && name.trim() !== "") {
-                students.push({
-                    name: name.trim(),
-                    stars: 0,
-                    tasks: {}
+            saveData() {
+                localStorage.setItem(this.storageKeyData, JSON.stringify(this.students));
+                localStorage.setItem(this.storageKeyTasks, JSON.stringify(this.tasks));
+            },
+
+            getRank(stars) {
+                if (stars < 10) return { n: "🦥 Ленивец", c: "rank-0" };
+                if (stars < 20) return { n: "🚶 Ученикус обыкновениус", c: "rank-10" };
+                if (stars < 30) return { n: "🛠️ Трудяга", c: "rank-20" };
+                return { n: "👑 Продлёникус легендариус", c: "rank-30" };
+            },
+
+            render() {
+                const container = document.getElementById('listBody');
+                if (this.students.length === 0 && this.tasks.length === 0) {
+                    container.innerHTML = '<h2 style="text-align:center; color: #6c757d;">Нет данных. Добавьте учеников!</h2>';
+                    return;
+                }
+
+                const gridConf = `2.5fr 1.5fr 1fr repeat(${this.tasks.length}, 1fr)`;
+                let html = '';
+
+                html += `<div class="student-row header-row" style="grid-template-columns: ${gridConf}">
+                            <div>Ученик</div>
+                            <div>Звание</div>
+                            <div class="col-center">⭐</div>`;
+                this.tasks.forEach(t => {
+                    html += `<div class="col-center">
+                                ${t.name} <button class="btn-delete" onclick="app.delTask('${t.id}')" title="Удалить предмет">✖</button>
+                             </div>`;
                 });
-                saveData();
-                renderList();
-            }
-        }
+                html += `</div>`;
 
-        function addTask() {
-            const name = prompt("Введите название нового предмета (можно с эмодзи 🎨):");
-            if (name && name.trim() !== "") {
-                const newId = 'task_' + Date.now();
-                tasksList.push({ id: newId, name: name.trim() });
-                saveData();
-                renderList();
-            }
-        }
-
-        function deleteStudent(index) {
-            const studentName = students[index].name;
-            if (confirm(`Точно удалить ученика "${studentName}" из списка?`)) {
-                students.splice(index, 1);
-                saveData();
-                renderList();
-            }
-        }
-
-        function deleteTask(taskId) {
-            const task = tasksList.find(t => t.id === taskId);
-            if (confirm(`Точно удалить предмет "${task.name}" у всех учеников?`)) {
-                tasksList = tasksList.filter(t => t.id !== taskId);
-                students.forEach(s => {
-                    if (s.tasks && s.tasks[taskId] !== undefined) {
-                        delete s.tasks[taskId];
-                    }
-                });
-                saveData();
-                renderList();
-            }
-        }
-
-        function resetDay() {
-            if (confirm("Вы уверены? Звездочки снимутся, но заработанные очки рейтинга и звания сохранятся!")) {
-                students.forEach(student => {
-                    if(!student.tasks) student.tasks = {};
-                    tasksList.forEach(task => {
-                        student.tasks[task.id] = false;
+                this.students.forEach((s, idx) => {
+                    if (!s.tasks) s.tasks = {}; 
+                    const rank = this.getRank(s.stars || 0);
+                    
+                    html += `<div class="student-row" style="grid-template-columns: ${gridConf}">
+                                <div class="student-name">
+                                    ${s.name} <button class="btn-delete" onclick="app.delStudent(${idx})" title="Удалить ученика">✖</button>
+                                </div>
+                                <div><span class="rank-badge ${rank.c}">${rank.n}</span></div>
+                                <div class="stars col-center">${s.stars || 0}</div>`;
+                    
+                    this.tasks.forEach(t => {
+                        const checked = s.tasks[t.id] ? 'checked' : '';
+                        html += `<div class="col-center">
+                                    <input type="checkbox" ${checked} onchange="app.toggle(${idx}, '${t.id}', this.checked)">
+                                 </div>`;
                     });
-                });
-                saveData();
-                renderList();
-            }
-        }
-
-        function fireConfetti() {
-            var duration = 3000;
-            var end = Date.now() + duration;
-
-            (function frame() {
-                confetti({
-                    particleCount: 8,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0 },
-                    colors: ['#ff9ff3', '#feca57', '#ff6b6b', '#48dbfb', '#1dd1a1']
-                });
-                confetti({
-                    particleCount: 8,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1 },
-                    colors: ['#ff9ff3', '#feca57', '#ff6b6b', '#48dbfb', '#1dd1a1']
+                    html += `</div>`;
                 });
 
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
+                container.innerHTML = html;
+            },
+
+            toggle(sIdx, tId, isChecked) {
+                const s = this.students[sIdx];
+                s.tasks[tId] = isChecked;
+                s.stars = isChecked ? (s.stars + 1) : (s.stars - 1);
+                
+                this.saveData();
+                this.render();
+
+                if (isChecked && this.tasks.length > 0) {
+                    const allDone = this.tasks.every(t => s.tasks[t.id]);
+                    if (allDone && typeof confetti === 'function') {
+                        confetti({ particleCount: 20, spread: 90, origin: { y: 0.6 } });
+                    }
                 }
-            }());
-        }
+            },
 
-        function updateTimer() {
-            const now = new Date();
-            const deadline = new Date();
-            deadline.setHours(18, 0, 0, 0);
+            addStudent() {
+                const name = prompt("Имя ученика:");
+                if (name && name.trim()) {
+                    this.students.push({ name: name.trim(), stars: 0, tasks: {} });
+                    this.saveData();
+                    this.render();
+                }
+            },
 
-            const diff = deadline - now;
-            const timerEl = document.getElementById('timer');
+            addTask() {
+                const name = prompt("Название предмета:");
+                if (name && name.trim()) {
+                    this.tasks.push({ id: 't_' + Date.now(), name: name.trim() });
+                    this.saveData();
+                    this.render();
+                }
+            },
 
-            if (diff <= 0) {
-                timerEl.innerText = "ВРЕМЯ ВЫШЛО!";
-                document.body.classList.add('explosion-mode');
-                return;
+            delStudent(idx) {
+                if (confirm(`Удалить "${this.students[idx].name}"?`)) {
+                    this.students.splice(idx, 1);
+                    this.saveData();
+                    this.render();
+                }
+            },
+
+            delTask(id) {
+                const t = this.tasks.find(x => x.id === id);
+                if (confirm(`Удалить предмет "${t.name}"?`)) {
+                    this.tasks = this.tasks.filter(x => x.id !== id);
+                    this.students.forEach(s => { if(s.tasks) delete s.tasks[id]; });
+                    this.saveData();
+                    this.render();
+                }
+            },
+
+            resetDay() {
+                if (confirm("Снять все звездочки? (Рейтинг сохранится)")) {
+                    this.students.forEach(s => { s.tasks = {}; });
+                    this.saveData();
+                    this.render();
+                }
+            },
+
+            updateTimer() {
+                const now = new Date();
+                const deadline = new Date();
+                deadline.setHours(18, 0, 0, 0);
+                const diff = deadline - now;
+                const el = document.getElementById('timer');
+                
+                if (!el) return;
+                
+                if (diff <= 0) {
+                    el.innerText = "ВРЕМЯ ВЫШЛО!";
+                    document.body.classList.add('explosion-mode');
+                    return;
+                }
+                
+                document.body.classList.remove('explosion-mode');
+                const h = Math.floor((diff / (1000 * 60 * 60)) % 24).toString().padStart(2, '0');
+                const m = Math.floor((diff / 1000 / 60) % 60).toString().padStart(2, '0');
+                const s = Math.floor((diff / 1000) % 60).toString().padStart(2, '0');
+                el.innerText = `${h}:${m}:${s}`;
             }
+        };
 
-            document.body.classList.remove('explosion-mode');
-
-            const h = Math.floor((diff / (1000 * 60 * 60)) % 24).toString().padStart(2, '0');
-            const m = Math.floor((diff / 1000 / 60) % 60).toString().padStart(2, '0');
-            const s = Math.floor((diff / 1000) % 60).toString().padStart(2, '0');
-
-            timerEl.innerText = `${h}:${m}:${s}`;
-        }
-
-        renderList();
-        setInterval(updateTimer, 1000);
-        updateTimer();
+        app.init();
 
     </script>
 </body>
