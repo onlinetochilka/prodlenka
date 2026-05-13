@@ -27,7 +27,7 @@
         h1 { color: #f1c40f; text-align: center; margin-bottom: 5px; font-size: 3rem; text-shadow: 0 0 15px rgba(241, 196, 15, 0.5); margin-top: 0;}
         
         .header-panel { 
-            display: flex; justify-content: space-between; align-items: center; 
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;
             background: rgba(255, 255, 255, 0.1); 
             backdrop-filter: blur(10px);
             padding: 20px 30px; 
@@ -159,7 +159,7 @@
         input[type="checkbox"]:checked::after {
             color: #f1c40f;
             text-shadow: 0 0 15px #f1c40f;
-            transform: translate(-50%, -53%) scale(1.15); /* Немного увеличивается */
+            transform: translate(-50%, -53%) scale(1.15);
         }
 
         /* Анимация Взрыва в 18:00 */
@@ -188,4 +188,278 @@
         <div>
             <h1>🌟 Звездная Продленка</h1>
         </div>
-        <div id="timer">--:--:
+        <div id="timer">--:--:--</div>
+        <div class="controls">
+            <button class="btn-add" onclick="addStudent()">+ Ученик</button>
+            <button class="btn-add-task" onclick="addTask()">+ Предмет</button>
+            <button class="btn-reset" onclick="resetDay()">🌅 Новый день</button>
+        </div>
+    </div>
+
+    <div class="student-list">
+        <div class="student-row header-row" id="headerRow">
+            </div>
+        <div id="listBody">
+            </div>
+    </div>
+
+    <script>
+        // Исходный список учеников
+        const defaultStudents = [
+            { name: "Белоцерковцев Лев", stars: 0, tasks: {} },
+            { name: "Ельцов Елисей", stars: 0, tasks: {} },
+            { name: "Ковалёва Кира", stars: 0, tasks: {} },
+            { name: "Котлов Пётр", stars: 0, tasks: {} },
+            { name: "Матушкин Георгий", stars: 0, tasks: {} },
+            { name: "Новикова Ульяна", stars: 0, tasks: {} },
+            { name: "Романова Елизавета", stars: 0, tasks: {} },
+            { name: "Рустамова Анастасия", stars: 0, tasks: {} },
+            { name: "Сапфиров Егор", stars: 0, tasks: {} },
+            { name: "Стрельченко Андрей", stars: 0, tasks: {} },
+            { name: "Тавлиди Вероника", stars: 0, tasks: {} },
+            { name: "Усов Тимофей", stars: 0, tasks: {} }
+        ];
+
+        // Исходный список предметов
+        const defaultTasks = [
+            { id: 'math', name: 'Математика 📐' },
+            { id: 'rus', name: 'Русский 📚' },
+            { id: 'read', name: 'Чтение 📖' },
+            { id: 'world', name: 'Окр. мир 🌍' },
+            { id: 'clean', name: 'Уборка 🧹' }
+        ];
+
+        let students = [];
+        let tasksList = [];
+
+        // БРОНИРОВАННАЯ ЗАГРУЗКА ДАННЫХ
+        try {
+            const savedStudents = localStorage.getItem('star_prodlenka_data_v3');
+            const savedTasks = localStorage.getItem('star_prodlenka_tasks_v3');
+            
+            students = savedStudents ? JSON.parse(savedStudents) : defaultStudents;
+            tasksList = savedTasks ? JSON.parse(savedTasks) : defaultTasks;
+
+            // Если данные повредились и стали не-списком, сбрасываем на заводские
+            if (!Array.isArray(students)) students = defaultStudents;
+            if (!Array.isArray(tasksList)) tasksList = defaultTasks;
+
+        } catch (e) {
+            // Если панель жестко блокирует память
+            console.error("Ошибка доступа к памяти браузера:", e);
+            students = defaultStudents;
+            tasksList = defaultTasks;
+        }
+
+        function getRankInfo(stars) {
+            if (stars < 10) return { name: "🦥 Ленивец", class: "rank-0" };
+            if (stars < 20) return { name: "🚶 Ученикус обыкновениус", class: "rank-10" };
+            if (stars < 30) return { name: "🛠️ Трудяга", class: "rank-20" };
+            return { name: "👑 Продлёникус легендариус", class: "rank-30" };
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('star_prodlenka_data_v3', JSON.stringify(students));
+                localStorage.setItem('star_prodlenka_tasks_v3', JSON.stringify(tasksList));
+            } catch (e) {
+                console.error("Не удалось сохранить данные на панели:", e);
+            }
+        }
+
+        function renderList() {
+            const listBody = document.getElementById('listBody');
+            const headerRow = document.getElementById('headerRow');
+            
+            if (students.length === 0 && tasksList.length === 0) {
+                headerRow.style.display = 'none';
+                listBody.innerHTML = '<h2 style="text-align:center; color:#7f8fa6;">Нет учеников и предметов. Добавьте их!</h2>';
+                return;
+            } else {
+                headerRow.style.display = 'grid';
+            }
+
+            const gridTemplate = `2.5fr 1.5fr 1fr repeat(${tasksList.length}, 1fr)`;
+            
+            headerRow.style.gridTemplateColumns = gridTemplate;
+            headerRow.innerHTML = `
+                <div>Ученик</div>
+                <div>Звание</div>
+                <div class="col-center">Всего ⭐</div>
+                ${tasksList.map(t => `
+                    <div class="col-center task-header">
+                        ${t.name}
+                        <button class="btn-delete" title="Удалить предмет" onclick="deleteTask('${t.id}')">✖</button>
+                    </div>
+                `).join('')}
+            `;
+
+            listBody.innerHTML = '';
+            students.forEach((student, index) => {
+                const rank = getRankInfo(student.stars);
+                if (!student.tasks) student.tasks = {};
+
+                const row = document.createElement('div');
+                row.className = 'student-row';
+                row.style.gridTemplateColumns = gridTemplate;
+                
+                row.innerHTML = `
+                    <div class="student-name">
+                        ${student.name}
+                        <button class="btn-delete" title="Удалить ученика" onclick="deleteStudent(${index})">✖</button>
+                    </div>
+                    <div><span class="rank-badge ${rank.class}">${rank.name}</span></div>
+                    <div class="stars col-center">${student.stars}</div>
+                    ${tasksList.map(task => `
+                        <div class="col-center">
+                            <input type="checkbox" 
+                                   ${student.tasks[task.id] ? 'checked' : ''} 
+                                   onchange="toggleTask(${index}, '${task.id}', this.checked)">
+                        </div>
+                    `).join('')}
+                `;
+                listBody.appendChild(row);
+            });
+        }
+
+        function toggleTask(studentIndex, taskId, isChecked) {
+            const student = students[studentIndex];
+            
+            student.tasks[taskId] = isChecked;
+            if (isChecked) {
+                student.stars += 1;
+            } else {
+                student.stars -= 1;
+            }
+            
+            saveData();
+            renderList();
+
+            if (tasksList.length > 0) {
+                const allDone = tasksList.every(t => student.tasks[t.id]);
+                if (isChecked && allDone) {
+                    fireConfetti();
+                }
+            }
+        }
+
+        function addStudent() {
+            const name = prompt("Введите имя ученика:");
+            if (name && name.trim() !== "") {
+                students.push({
+                    name: name.trim(),
+                    stars: 0,
+                    tasks: {}
+                });
+                saveData();
+                renderList();
+            }
+        }
+
+        function addTask() {
+            const name = prompt("Введите название нового предмета (можно с эмодзи 🎨):");
+            if (name && name.trim() !== "") {
+                const newId = 'task_' + Date.now();
+                tasksList.push({ id: newId, name: name.trim() });
+                saveData();
+                renderList();
+            }
+        }
+
+        function deleteStudent(index) {
+            const studentName = students[index].name;
+            if (confirm(`Точно удалить ученика "${studentName}" из списка?`)) {
+                students.splice(index, 1);
+                saveData();
+                renderList();
+            }
+        }
+
+        function deleteTask(taskId) {
+            const task = tasksList.find(t => t.id === taskId);
+            if (confirm(`Точно удалить предмет "${task.name}" у всех учеников?`)) {
+                tasksList = tasksList.filter(t => t.id !== taskId);
+                students.forEach(s => {
+                    if (s.tasks && s.tasks[taskId] !== undefined) {
+                        delete s.tasks[taskId];
+                    }
+                });
+                saveData();
+                renderList();
+            }
+        }
+
+        function resetDay() {
+            if (confirm("Вы уверены? Звездочки снимутся, но заработанные очки рейтинга и звания сохранятся!")) {
+                students.forEach(student => {
+                    if(!student.tasks) student.tasks = {};
+                    tasksList.forEach(task => {
+                        student.tasks[task.id] = false;
+                    });
+                });
+                saveData();
+                renderList();
+            }
+        }
+
+        function fireConfetti() {
+            if (typeof confetti === 'function') {
+                var duration = 3000;
+                var end = Date.now() + duration;
+
+                (function frame() {
+                    confetti({
+                        particleCount: 8,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: ['#ff9ff3', '#feca57', '#ff6b6b', '#48dbfb', '#1dd1a1']
+                    });
+                    confetti({
+                        particleCount: 8,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: ['#ff9ff3', '#feca57', '#ff6b6b', '#48dbfb', '#1dd1a1']
+                    });
+
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                }());
+            }
+        }
+
+        function updateTimer() {
+            const now = new Date();
+            const deadline = new Date();
+            deadline.setHours(18, 0, 0, 0);
+
+            const diff = deadline - now;
+            const timerEl = document.getElementById('timer');
+
+            if (!timerEl) return;
+
+            if (diff <= 0) {
+                timerEl.innerText = "ВРЕМЯ ВЫШЛО!";
+                document.body.classList.add('explosion-mode');
+                return;
+            }
+
+            document.body.classList.remove('explosion-mode');
+
+            const h = Math.floor((diff / (1000 * 60 * 60)) % 24).toString().padStart(2, '0');
+            const m = Math.floor((diff / 1000 / 60) % 60).toString().padStart(2, '0');
+            const s = Math.floor((diff / 1000) % 60).toString().padStart(2, '0');
+
+            timerEl.innerText = `${h}:${m}:${s}`;
+        }
+
+        // Запуск
+        renderList();
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+    </script>
+</body>
+</html>
